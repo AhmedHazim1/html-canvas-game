@@ -6,7 +6,8 @@ let score_text = document.querySelector("#score");
 let restart_bt = document.querySelector("#restart_bt")
 
 let score = 0;
-let timer = 60;
+let start_timer = 30;
+let timer = start_timer;
 
 addEventListener("load", init)
 addEventListener("adjust_can", adjust_can)
@@ -94,8 +95,9 @@ function update_timer()
 function restart()
 {
     score = 0;
-    timer = 60;
-
+    timer = start_timer;
+    direction = null;
+    PLAYER.color = "red"
     PLAYER.position.x = canvas.width/2 - PLAYER.width/2
     PLAYER.position.y = canvas.height/2 + PLAYER.height/2
 

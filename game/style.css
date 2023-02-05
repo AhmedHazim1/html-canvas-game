@@ -15,9 +15,25 @@ main
     flex-direction: column;
 
     width: 100vw;
-    height: 100vh;
 }
-h1{
+header
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+    margin-top: 2em;
+
     color: rgb(228, 228, 228);
     font-family:'Courier New', Courier, monospace;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+#restart_bt
+{
+    margin-top: 1em;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    padding: .5em;
 }
