@@ -1,11 +1,16 @@
 const canvas = document.querySelector("canvas")
 const ctx = canvas.getContext("2d")
-let direction = null, PLAYER = null, PARTICLE;
-let score = 0;
+
+let direction = null, PLAYER, PARTICLE;
 let score_text = document.querySelector("#score");
+let restart_bt = document.querySelector("#restart_bt")
+
+let score = 0;
+let timer = 60;
 
 addEventListener("load", init)
 addEventListener("adjust_can", adjust_can)
+restart_bt.addEventListener("click",restart)
 
 function adjust_can()
 {
@@ -35,7 +40,7 @@ function init()
  
     let width = 30
     let height = 30
-    let player_position = {x: canvas.width/2 - width, y: canvas.height/2 + height}
+    let player_position = {x: canvas.width/2 - width/2, y: canvas.height/2 + height/2}
     let player_color = "red"
     let velocity = 2
 
@@ -60,8 +65,13 @@ function animate()
         PARTICLE = create_particle()
     }
 
-    PARTICLE.update()
-    PLAYER.update(direction)
+    if(timer > 0.01)
+    {
+        update_timer()
+        PARTICLE.update()
+        PLAYER.update(direction)
+    }
+
 }
 
 function create_particle()
@@ -73,6 +83,24 @@ function create_particle()
     let particle_position = {x: Math.floor(Math.random() * ((canvas.width - raduis) - raduis) + raduis),
                              y: Math.floor(Math.random() * ((canvas.height - raduis) - raduis) + raduis)}
     return new particle(raduis, particle_position, particle_color, ctx)
+}
+
+function update_timer()
+{
+    timer -= 0.0166;
+    document.querySelector("#timer").textContent = Math.floor(timer);
+}
+
+function restart()
+{
+    score = 0;
+    timer = 60;
+
+    PLAYER.position.x = canvas.width/2 - PLAYER.width/2
+    PLAYER.position.y = canvas.height/2 + PLAYER.height/2
+
+    PARTICLE = create_particle()
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
 class player
