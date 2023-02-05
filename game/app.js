@@ -1,6 +1,8 @@
 const canvas = document.querySelector("canvas")
 const ctx = canvas.getContext("2d")
 let direction = null, PLAYER = null, PARTICLE;
+let score = 0;
+let score_text = document.querySelector("#score");
 
 addEventListener("load", init)
 addEventListener("adjust_can", adjust_can)
@@ -24,8 +26,6 @@ addEventListener("keydown", e=>
         direction = 'D'
     if(key == "ArrowUp")
         direction = 'U'
-
-    PLAYER.update(direction)
 })
 
 function init()
@@ -39,16 +39,8 @@ function init()
     let player_color = "red"
     let velocity = 2
 
-    let particle_color = "white"
-    let raduis = 10
-
-    // get a position where the x and y aren't outside the canvas
-    let particle_position = {x: Math.random() * ((canvas.width - raduis) - raduis) + raduis,
-                             y: Math.random() * ((canvas.height - raduis) - raduis) + raduis}
-
-    PLAYER = new player(player_position, width, height, velocity, player_color, canvas)    
-    PARTICLE = new particle(raduis, particle_position, particle_color, ctx)
-
+    PLAYER = new player(player_position, width, height, velocity, player_color, canvas, ctx)
+    PARTICLE = create_particle()
     animate()
 }
 
@@ -56,16 +48,36 @@ function animate()
 {
     requestAnimationFrame(animate)
 
-    ctx.fillStyle = "rgba(10, 10, 10, .5)"
+    ctx.fillStyle = "rgba(10, 10, 10, .1)"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     
+    if (Math.hypot((PLAYER.position.x + PLAYER.width/2) - PARTICLE.position.x, (PLAYER.position.y + PLAYER.height/2) - PARTICLE.position.y) <= 30
+    || PARTICLE.position.x > canvas.width || PARTICLE.position.x < 0 || PARTICLE.position.y > canvas.height || PARTICLE.position.y < 0)
+    {
+        score++;
+        score_text.textContent = score;
+        PLAYER.color = PARTICLE.color;
+        PARTICLE = create_particle()
+    }
+
     PARTICLE.update()
     PLAYER.update(direction)
 }
 
+function create_particle()
+{
+    let particle_color = "white"
+    let raduis = 10
+
+    // get a position where the x and y aren't outside the canvas
+    let particle_position = {x: Math.floor(Math.random() * ((canvas.width - raduis) - raduis) + raduis),
+                             y: Math.floor(Math.random() * ((canvas.height - raduis) - raduis) + raduis)}
+    return new particle(raduis, particle_position, particle_color, ctx)
+}
+
 class player
 {
-    constructor(init_position, width, height, velocity, color, canvas)
+    constructor(init_position, width, height, velocity, color, canvas, ctx)
     {
         this.position = init_position;
         this.width = width;
@@ -73,11 +85,12 @@ class player
         this.color = color;
         this.velocity = velocity;
         this.canvas = canvas;
-        this.ctx = canvas.getContext("2d");
+        this.ctx = ctx;
     }
 
     draw()
     {
+        this.ctx.beginPath()
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
@@ -111,6 +124,7 @@ class particle
 
     draw()
     {
+        this.ctx.beginPath()
         this.ctx.fillStyle = this.color;
         this.ctx.arc(this.position.x, this.position.y, this.raduis, 0, Math.PI * 2);
         this.ctx.fill()
@@ -119,8 +133,10 @@ class particle
     update()
     {
         this.hue++;
-        this.color = `hsl(${this.hue}, 70%, 70%)`
+        this.color = `hsl(${this.hue}, 100%, 70%)`
 
+        this.position.x += Math.random() < .5 ? Math.random() : -Math.random();
+        this.position.y += Math.random() < .5 ? Math.random() : -Math.random();
         this.draw()
     }
 }
